@@ -12,7 +12,7 @@ public class EnvSetUp
         }
         else if (System.getProperty("env").equalsIgnoreCase("dev"))
         {
-            property.setProperty("GetProductsUrl","https://api-na.dev.mypepsico.com/it/och/b2bproductsvc/V1/api/products")
+            property.setProperty("GetProductsUrl","https://api-na.dev.mypepsico.com/it/och/b2bproductsvc/V1/api/products");
         }
 
         System.out.println(property.getProperty("GetProductsUrl"));
