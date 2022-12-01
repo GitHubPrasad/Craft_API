@@ -35,7 +35,7 @@ public class Allocator
     private void driveBatchExecution()
     {
         resultSummaryManager.setRelativePath();
-        properties = Settings.getInstance();
+        //properties = Settings.getInstance();
         System.out.println("properties::"+properties);
         mobileproperties = Settings.getMobilePropertiesInstance();
         String runConfiguration;
