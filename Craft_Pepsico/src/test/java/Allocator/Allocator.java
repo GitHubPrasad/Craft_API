@@ -1,5 +1,6 @@
 package allocator;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.sun.scenario.Settings;
 
 import java.util.Properties;
@@ -38,6 +39,42 @@ public class Allocator
         System.out.println("properties::"+properties);
         mobileproperties = Settings.getMobilePropertiesInstance();
         String runConfiguration;
+        if(System.getProperty("RunConfiguration")!=null)
+        {
+            runConfiguration = properties.getProperty("RunConfiguration");
+        }
+        else
+        {
+            System.out.println("In");
+            runConfiguration = properties.getProperty("RunConfiguration");
+        }
+        resultSummaryManager.initializeTestBatch(runConfiguration);
+
+        int nThreads = Integer.parseInt(properties.getProperty("NumberOfThreads"));
+        resultSummaryManager.initializeSummaryReport(nThreads);
+
+        resultSummaryManager.setupErrorLog();
+
+        generateExtentReports();
+
+        int testBatchStatus = executeTestBatch(nThreads);
+
+        resultSummaryManager.wrapUp(false);
+
+        if(Boolean.parseBoolean(properties.getProperty("GenerateKlov")))
+        {
+            extentReport.attachReporter(KlovReporter);
+        }
+
+        extentReport.flush();
+
+        resultSummaryManager.LaunchResultSummary();
+
+        System.exit(testBatchStatus);
+
+
+
+
 
     }
 
