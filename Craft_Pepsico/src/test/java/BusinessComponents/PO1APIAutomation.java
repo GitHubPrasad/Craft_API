@@ -86,7 +86,7 @@ public PO1APIAutomation(ScriptHelper scriptHelper)
      System.out.println(newBody);
      report.updateTestLog("Microservices Endpoint Url", ""+ orderIntakeUrl + "", Status.DONE);
      report.updateTestLog("SourceOrderId in Request", "" + sourceOrderId + "", Status.DONE);
-     report.updateTestLog ("SourceSystemId in Request", "" + sourceSystemId + "", Status.DONE);
+     report.updateTestLog("SourceSystemId in Request", "" + sourceSystemId + "", Status.DONE);
  report.updateTestLog("Request Posted in RestAssured", "Request Posted Successfully", Status.PASS);
  Response response = RestAssured.gíven().relaxedHTTPSValidation().when().contentType ("application/json")
  accept ("application/json").auth().oauth2 (accesstoken).body (newBody).post (orderIntakeUrl);
