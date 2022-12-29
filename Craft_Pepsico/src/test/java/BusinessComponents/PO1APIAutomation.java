@@ -46,6 +46,7 @@ public PO1APIAutomation(ScriptHelper scriptHelper)
     String getorderstore = property.getProperty (System.getProperty("env").toUppercase() + "." + "GetOrderstore");
                     
 
+    //First Method: Generate Access Token
     public String generateAccessToken_P01() throws keyManagementException, NoSuchAlgorithmException,
         UnrecoverablekeyException, KeystoreException, CertificateException, I0Exception, InterruptedException
     {
@@ -62,81 +63,98 @@ public PO1APIAutomation(ScriptHelper scriptHelper)
                 .formParam("client_secret", ClientSecret)
                 .formParam("grant_type", GrantType)
                 .formParam("scope", Scope)
-                post(TokenURL);
+                .post(TokenURL);
+
         System.out.println(response.jsonpath().prettify());
-        String Accesstoken -response.jsonPath().get("access_token");
+        String Accesstoken = response.jsonPath().get("access_token");
         report.updateTestLog("Access token Should be generated", "Access token is generated successfully", Status.PASS);
         return Accesstoken;
     }
 
 
-/*** OrderpostandResponse Validation *****/
- public void orderIntakePostRequest_P01() throws keyManagementException, NoSuchAlgorithmException
- UnrecoverablekeyException, KeyStoreException, CertificateException, I0Exception, InterruptedException
+    //Second Method: Order Post and Response Validation
+ public void orderIntakePostRequest_P01() throws keyManagementException, NoSuchAlgorithmException, UnrecoverablekeyException,
+         KeyStoreException, CertificateException, I0Exception, InterruptedException
  {
-     System.out.println("*****************");
-     String accesstoken = generateAccessToken_P01();
+     System.out.println("*********");
+     String accesstoken = generateAccessToken_P01(); //First method's value is assigned here
+
      System.out.println("*********");
      String body = dataTable.getData("General_Data", "Body");
-     sourceOrderId = po10rderMAP.get (dataTable.getData("General_Data", "SourceOrderId"));
+     sourceOrderId = po10rderMAP.get(dataTable.getData("General_Data", "SourceOrderId"));
      String sourceSystemId = dataTable.getData("General_Data", "SourceSystemId");
      String status_code = dataTable.getData("General_Data", "Status_code");
      String responseStatuscode = dataTable.getData("General_Data", "Response_StatusCode");
-     String newBody = body.replace ("265138580", sourceOrderId).replace ("625", sourcesystemId);
+     String newBody = body.replace ("265138580", sourceOrderId).replace ("625", sourcesystemId); //Imp
      System.out.println(newBody);
-     report.updateTestLog("Microservices Endpoint Url", ""+ orderIntakeUrl + "", Status.DONE);
+
+     report.updateTestLog("Microservices Endpoint Url", "" + orderIntakeUrl + "", Status.DONE);
      report.updateTestLog("SourceOrderId in Request", "" + sourceOrderId + "", Status.DONE);
      report.updateTestLog("SourceSystemId in Request", "" + sourceSystemId + "", Status.DONE);
- report.updateTestLog("Request Posted in RestAssured", "Request Posted Successfully", Status.PASS);
- Response response = RestAssured.gíven().relaxedHTTPSValidation().when().contentType ("application/json")
- accept ("application/json").auth().oauth2 (accesstoken).body (newBody).post (orderIntakeUrl);
- System.out.println("Response body: " + response.body().asString());
- report.updateTestLog ("Response received", "Response received Successfully:" + response.body().asString()
- Status.PASS);
- report.updatetestLog("Json Response Validation", "***** Response Validation starts*****", Status.DONE);
- int Statuscode = response.statusCode ();
- System.out.println("Statuscode:" + Statuscode);
- if (Statuscode = Integer.parseInt(status_code)) f
- report.updateTestLog(" Status code ", "StatusCode:" + Statuscode + "", Status.PASS);
- Helse
- report.updateTestLog("Status code ", "StatusCode:" + Statuscode + "", Status.FAIL);
- Long time = response.getTimeIn(TimeUnit.MILLISECONDS);
- report.updateTestLog ("Response Time :", "" + time + "ms", Status.DONE);
- System.out.println("time > " + time);
- String responseSourceId = response.jsonPath ().get ("orders [0].sourceOrderId");
- System.out.println("responseSourceId:" + responseSourceId);
- String responseStatusCode = response.jsonPath().get("orders[0].statuscode");
+     report.updateTestLog("Request Posted in RestAssured", "Request Posted Successfully", Status.PASS);
 
- System.out.println("responseStatusCode:" + responseStatusCode);
- if (responseSourceId.equals ( sourceOrderId))
- report.updateTestLog("SourceOrderId validation", "SourceOrderId:" + responseSourceId
- if (responseStatusCode.equals (responsestatuscode) )
- report.updateTestLog(" Response Code Received:" + responseStatusCode +
- "Response code validation passed", Status.PASS);
- Status.PASS);
- Jelse
- report.updateTestLog(" Response Code Received
- responseStatusCode
- X
- Status.FAIL);
- 1 else f
- report.updateTestLog("SourceOrderId validation"
- "Expected result:" + sourceOrderId +
- Actual result :
- responseSourceId
- Status.FAIL);
+     Response response = RestAssured.gíven()
+                         .relaxedHTTPSValidation()
+                         .when().contentType("application/json")
+                         .accept("application/json").auth().oauth2(accesstoken)
+                         .body(newBody).post(orderIntakeUrl);
+
+     System.out.println("Response body: " + response.body().asString());
+     report.updateTestLog("Response received", "Response received Successfully: " + response.body().asString(), Status.PASS);
+     report.updatetestLog("Json Response Validation", "***** Response Validation starts *****", Status.DONE);
+
+     int Statuscode = response.statusCode();
+     System.out.println("Statuscode:" + Statuscode);
+
+     if (Statuscode = Integer.parseInt(status_code))
+     {
+         report.updateTestLog(" Status code ", "StatusCode: " + Statuscode + "", Status.PASS);
+     }
+     else
+     {
+         report.updateTestLog("Status code ", "StatusCode: " + Statuscode + "", Status.FAIL);
+     }
+
+     Long time = response.getTimeIn(TimeUnit.MILLISECONDS);
+     report.updateTestLog("Response Time: ", "" + time + "ms", Status.DONE);
+     System.out.println("time = " + time);
+
+     String responseSourceId = response.jsonPath().get("orders[0].sourceOrderId");
+     System.out.println("responseSourceId: " + responseSourceId);
+
+     String responseStatusCode = response.jsonPath().get("orders[0].statuscode");
+     System.out.println("responseStatusCode:" + responseStatusCode);
+
+     if (responseSourceId.equals( sourceOrderId))
+     {
+        report.updateTestLog("SourceOrderId validation", "SourceOrderId:" + responseSourceId + "", Status.PASS;
+        if (responseStatusCode.equals(responsestatuscode))
+        {
+            report.updateTestLog(" Response Code Received:" + responseStatusCode + "Response code validation passed", Status.PASS);
+        }
+        else
+        {
+            report.updateTestLog(" Response Code Received ", "" + responseStatusCode + "", Status.FAIL);
+        }
+     }
+     else
+     {
+         report.updateTestLog("SourceOrderId validation", "Expected result:" + sourceOrderId + "",
+                         Actual result :"" + responseSourceId + "", Status.FAIL);
+     }
+
  }
 
-
- public void validateUsingGETOrderstore_P010rders (String getorderId)
- throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException,
- CertificateException, I0Exception, InterruptedException t
- String GetorderstoreUpdatedUrl = getOrderStore.concat (getorderId);
- String Status_code = "200";
- String orderstatusCode = dataTable.getData("General_Data", "0rderStatus");
- String orderSubStatus = dataTable.getData("General_Data", "OrderSubStatus");
- String orderProcessingstatus = dataTable.getData("General_Data", "OrderProcessingstatus");
- String orderProcessingstatusReason = dataTable.getData("General_Data", "OrderProcessingstatusReason");
+    //Third Method: Validate Using Get Order Store
+ public void validateUsingGETOrderstore_P010rders (String getorderId) throws KeyManagementException, UnrecoverableKeyException,
+                NoSuchAlgorithmException, KeyStoreException, CertificateException, I0Exception, InterruptedException
+ {
+     String GetorderstoreUpdatedUrl = getOrderStore.concat (getorderId);
+     String Status_code = "200";
+     String orderstatusCode = dataTable.getData("General_Data", "0rderStatus");
+     String orderSubStatus = dataTable.getData("General_Data", "OrderSubStatus");
+     String orderProcessingstatus = dataTable.getData("General_Data", "OrderProcessingstatus");
+     String orderProcessingstatusReason = dataTable.getData("General_Data", "OrderProcessingstatusReason");
 
  System.out.println("*****************");
  report.updatetestLog("*********Order Store GET Request**********", "****kk********************", Status.DONE);
